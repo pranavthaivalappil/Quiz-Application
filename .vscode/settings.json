@@ -1,0 +1,9 @@
+{
+    "java.project.sourcePaths": ["src"],
+    "java.project.outputPath": "bin",
+    "java.debug.settings.onBuildFailureProceed": true,
+    "code-runner.executorMap": {
+        "java": "cd $dir && javac -cp ../src *.java && java -cp ../src $fileNameWithoutExt"
+    },
+    "code-runner.runInTerminal": true
+} 

@@ -2,14 +2,21 @@ package com.java.quizApplication;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class Login extends JFrame implements ActionListener {
@@ -17,62 +24,154 @@ public class Login extends JFrame implements ActionListener {
 	JButton rules, back;
 	JTextField tfname;
 
+	// Custom JButton with rounded corners
+	class RoundedButton extends JButton {
+		public RoundedButton(String text) {
+			super(text);
+			setContentAreaFilled(false);
+			setFocusPainted(false);
+			setBorderPainted(false);
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			
+			if (getModel().isPressed()) {
+				g2.setColor(new Color(25, 118, 210));
+			} else if (getModel().isRollover()) {
+				g2.setColor(new Color(42, 162, 255));
+			} else {
+				g2.setColor(new Color(33, 150, 243));
+			}
+			
+			g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+			
+			g2.setColor(getForeground());
+			g2.setFont(getFont());
+			int textWidth = g2.getFontMetrics().stringWidth(getText());
+			int textHeight = g2.getFontMetrics().getHeight();
+			g2.drawString(getText(), (getWidth() - textWidth) / 2, (getHeight() + textHeight / 2) / 2);
+			g2.dispose();
+		}
+	}
+
 	Login() {
-		getContentPane().setBackground(Color.WHITE);
+		// Modern gradient background
+		setContentPane(new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+				
+				// Gradient background
+				java.awt.GradientPaint gradient = new java.awt.GradientPaint(
+					0, 0, new Color(240, 242, 247),
+					0, getHeight(), new Color(255, 255, 255)
+				);
+				g2d.setPaint(gradient);
+				g2d.fillRect(0, 0, getWidth(), getHeight());
+			}
+		});
 		setLayout(null);
 
-		ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/login.jpeg"));
-		JLabel image = new JLabel(i1);
-		image.setBounds(40, 25, 400, 400);
-		add(image);
-
-		JLabel heading = new JLabel("Quiz Game");
-		heading.setBounds(495, 60, 300, 45);
-		heading.setFont(new Font("Tahoma", Font.BOLD, 40));
-		heading.setForeground(new Color(30, 144, 254));
+		// Main title with modern styling
+		JLabel heading = new JLabel("QuizMaster");
+		heading.setBounds(450, 50, 350, 60);
+		heading.setFont(new Font("Segoe UI", Font.BOLD, 48));
+		heading.setForeground(new Color(33, 150, 243));
 		add(heading);
 
-		JLabel name = new JLabel("Enter your name");
-		name.setBounds(530, 135, 300, 20);
-		name.setFont(new Font("Mongolian Baiti", Font.BOLD, 18));
-		name.setForeground(new Color(30, 144, 254));
+		// Subtitle
+		JLabel subtitle = new JLabel("Test Your Knowledge");
+		subtitle.setBounds(480, 110, 300, 30);
+		subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+		subtitle.setForeground(new Color(96, 125, 139));
+		add(subtitle);
+
+		// Quiz image with border
+		ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/login.jpeg"));
+		JLabel image = new JLabel(i1);
+		image.setBounds(50, 40, 350, 350);
+		image.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createRaisedBevelBorder(),
+			BorderFactory.createLoweredBevelBorder()
+		));
+		add(image);
+
+		// Name input label
+		JLabel name = new JLabel("Enter Your Name");
+		name.setBounds(480, 170, 300, 25);
+		name.setFont(new Font("Segoe UI", Font.BOLD, 20));
+		name.setForeground(new Color(62, 39, 35));
 		add(name);
 
+		// Modern text field
 		tfname = new JTextField();
-		tfname.setBounds(455, 200, 300, 25);
-		tfname.setFont(new Font("Times New Roman", Font.BOLD, 20));
+		tfname.setBounds(480, 210, 300, 45);
+		tfname.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+		tfname.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createRaisedBevelBorder(),
+			BorderFactory.createEmptyBorder(10, 15, 10, 15)
+		));
+		tfname.setBackground(Color.WHITE);
 		add(tfname);
 
-		rules = new JButton("Start");
-		rules.setBounds(455, 270, 120, 25);
-		rules.setBackground(new Color(30, 144, 254));
+		// Start button with modern styling
+		rules = new RoundedButton("START QUIZ");
+		rules.setBounds(480, 290, 140, 45);
+		rules.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		rules.setForeground(Color.WHITE);
 		rules.addActionListener(this);
+		rules.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 		add(rules);
 
-		back = new JButton("Exit");
-		back.setBounds(635, 270, 120, 25);
-		back.setBackground(new Color(30, 144, 254));
+		// Exit button
+		back = new RoundedButton("EXIT");
+		back.setBounds(640, 290, 140, 45);
+		back.setFont(new Font("Segoe UI", Font.BOLD, 16));
 		back.setForeground(Color.WHITE);
 		back.addActionListener(this);
+		back.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 		add(back);
 
-		setSize(800, 500);
+		// Footer text
+		JLabel footer = new JLabel("© 2024 QuizMaster - Challenge Yourself!");
+		footer.setBounds(450, 420, 350, 20);
+		footer.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+		footer.setForeground(new Color(158, 158, 158));
+		add(footer);
+
+		setSize(850, 550);
 		setLocationRelativeTo(null);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setResizable(false);
+		setTitle("QuizMaster - Login");
 		setVisible(true);
 	}
 
 	public void actionPerformed(ActionEvent ae) {
 		if (ae.getSource() == rules) {
-			String name = tfname.getText();
+			String name = tfname.getText().trim();
 			if (name.equals("")) {
-				JOptionPane.showMessageDialog(this, "Please enter your name.");
+				JOptionPane.showMessageDialog(this, 
+					"Please enter your name to continue!", 
+					"Name Required", 
+					JOptionPane.WARNING_MESSAGE);
 			} else {
 				setVisible(false);
 				new Rules(name);
 			}
 		} else if (ae.getSource() == back) {
-			setVisible(false);
+			int choice = JOptionPane.showConfirmDialog(this, 
+				"Are you sure you want to exit?", 
+				"Exit Confirmation", 
+				JOptionPane.YES_NO_OPTION);
+			if (choice == JOptionPane.YES_OPTION) {
+				System.exit(0);
+			}
 		}
 	}
 

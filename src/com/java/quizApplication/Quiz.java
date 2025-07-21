@@ -3,25 +3,31 @@ package com.java.quizApplication;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.border.Border;
 
 public class Quiz extends JFrame implements ActionListener {
 
 	String questions[][] = new String[10][5];
 	String answers[][] = new String[10][2];
 	String useranswers[][] = new String[10][1];
-	JLabel qno, question;
+	JLabel qno, question, progress;  // Added progress as class field
 	JRadioButton opt1, opt2, opt3, opt4;
 	ButtonGroup groupoptions;
 	JButton next, submit, lifeline;
+	JPanel questionPanel, optionsPanel;
 
 	public static int timer = 15;
 	public static int ans_given = 0;
@@ -30,29 +36,178 @@ public class Quiz extends JFrame implements ActionListener {
 
 	String name;
 
+	// Custom JButton with rounded corners
+	class RoundedButton extends JButton {
+		public RoundedButton(String text) {
+			super(text);
+			setContentAreaFilled(false);
+			setFocusPainted(false);
+			setBorderPainted(false);
+		}
+
+		@Override
+		protected void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g.create();
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			
+			if (getModel().isPressed()) {
+				g2.setColor(new Color(25, 118, 210));
+			} else if (getModel().isRollover()) {
+				g2.setColor(new Color(42, 162, 255));
+			} else {
+				g2.setColor(new Color(33, 150, 243));
+			}
+			
+			g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+			
+			g2.setColor(getForeground());
+			g2.setFont(getFont());
+			int textWidth = g2.getFontMetrics().stringWidth(getText());
+			int textHeight = g2.getFontMetrics().getHeight();
+			g2.drawString(getText(), (getWidth() - textWidth) / 2, (getHeight() + textHeight / 2) / 2);
+			g2.dispose();
+		}
+	}
+
 	Quiz(String name) {
 		this.name = name;
 		setBounds(50, 0, 1400, 900);
 		setSize(1400, 720);
-		getContentPane().setBackground(Color.WHITE);
+		
+		// Modern gradient background
+		setContentPane(new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+				
+				java.awt.GradientPaint gradient = new java.awt.GradientPaint(
+					0, 0, new Color(240, 245, 255),
+					0, getHeight(), new Color(255, 255, 255)
+				);
+				g2d.setPaint(gradient);
+				g2d.fillRect(0, 0, getWidth(), getHeight());
+			}
+		});
 		setLayout(null);
 		setLocationRelativeTo(null);
+		setTitle("QuizMaster - Test Your Knowledge");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+		// Header with image
 		ImageIcon i1 = new ImageIcon(ClassLoader.getSystemResource("icons/quiz.jpg"));
 		JLabel image = new JLabel(i1);
-		image.setBounds(0, 0, 1400, 385);
+		image.setBounds(0, 0, 1400, 200);
 		add(image);
 
+		// Welcome message
+		JLabel welcome = new JLabel("Welcome " + name + "! Answer the questions below:");
+		welcome.setBounds(50, 220, 800, 35);
+		welcome.setFont(new Font("Segoe UI", Font.BOLD, 24));
+		welcome.setForeground(new Color(33, 150, 243));
+		add(welcome);
+
+		// Question panel with card styling
+		questionPanel = new JPanel();
+		questionPanel.setBounds(50, 270, 1000, 100);
+		questionPanel.setBackground(Color.WHITE);
+		questionPanel.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createRaisedBevelBorder(),
+			BorderFactory.createEmptyBorder(20, 20, 20, 20)
+		));
+		questionPanel.setLayout(null);
+		add(questionPanel);
+
 		qno = new JLabel();
-		qno.setBounds(100, 420, 50, 30);
-		qno.setFont(new Font("Tahoma", Font.PLAIN, 24));
-		add(qno);
+		qno.setBounds(20, 30, 50, 40);
+		qno.setFont(new Font("Segoe UI", Font.BOLD, 28));
+		qno.setForeground(new Color(33, 150, 243));
+		questionPanel.add(qno);
 
 		question = new JLabel();
-		question.setBounds(150, 420, 900, 30);
-		question.setFont(new Font("Tahoma", Font.PLAIN, 24));
-		add(question);
+		question.setBounds(80, 30, 900, 40);
+		question.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+		question.setForeground(new Color(62, 39, 35));
+		questionPanel.add(question);
 
+		// Initialize questions and answers
+		initializeQuestions();
+
+		// Options panel with modern styling
+		optionsPanel = new JPanel();
+		optionsPanel.setBounds(50, 390, 1000, 250);
+		optionsPanel.setBackground(Color.WHITE);
+		optionsPanel.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createRaisedBevelBorder(),
+			BorderFactory.createEmptyBorder(20, 20, 20, 20)
+		));
+		optionsPanel.setLayout(null);
+		add(optionsPanel);
+
+		// Modern radio buttons
+		opt1 = createStyledRadioButton();
+		opt1.setBounds(30, 20, 900, 40);
+		optionsPanel.add(opt1);
+
+		opt2 = createStyledRadioButton();
+		opt2.setBounds(30, 70, 900, 40);
+		optionsPanel.add(opt2);
+
+		opt3 = createStyledRadioButton();
+		opt3.setBounds(30, 120, 900, 40);
+		optionsPanel.add(opt3);
+
+		opt4 = createStyledRadioButton();
+		opt4.setBounds(30, 170, 900, 40);
+		optionsPanel.add(opt4);
+
+		groupoptions = new ButtonGroup();
+		groupoptions.add(opt1);
+		groupoptions.add(opt2);
+		groupoptions.add(opt3);
+		groupoptions.add(opt4);
+
+		// Control buttons
+		next = new RoundedButton("NEXT QUESTION");
+		next.setBounds(1100, 390, 200, 50);
+		next.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		next.setForeground(Color.WHITE);
+		next.addActionListener(this);
+		next.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+		add(next);
+
+		submit = new RoundedButton("SUBMIT QUIZ");
+		submit.setBounds(1100, 460, 200, 50);
+		submit.setFont(new Font("Segoe UI", Font.BOLD, 16));
+		submit.setForeground(Color.WHITE);
+		submit.addActionListener(this);
+		submit.setEnabled(false);
+		submit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+		add(submit);
+
+		// Progress indicator
+		progress = new JLabel("Question 1 of 10");
+		progress.setBounds(1100, 530, 200, 30);
+		progress.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		progress.setForeground(new Color(96, 125, 139));
+		add(progress);
+
+		start(count);
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+
+	private JRadioButton createStyledRadioButton() {
+		JRadioButton rb = new JRadioButton();
+		rb.setBackground(Color.WHITE);
+		rb.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+		rb.setForeground(new Color(62, 39, 35));
+		rb.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+		return rb;
+	}
+
+	private void initializeQuestions() {
 		questions[0][0] = "Which is used to find and fix bugs in the Java programs.?";
 		questions[0][1] = "JVM";
 		questions[0][2] = "JDB";
@@ -123,57 +278,6 @@ public class Quiz extends JFrame implements ActionListener {
 		answers[7][1] = "Java Archive";
 		answers[8][1] = "java.lang.StringBuilder";
 		answers[9][1] = "Bytecode is executed by JVM";
-
-		opt1 = new JRadioButton();
-		opt1.setBounds(170, 500, 700, 30);
-		opt1.setBackground(Color.WHITE);
-		opt1.setFont(new Font("Dialog", Font.PLAIN, 20));
-		add(opt1);
-
-		opt2 = new JRadioButton();
-		opt2.setBounds(170, 540, 700, 30);
-		opt2.setBackground(Color.WHITE);
-		opt2.setFont(new Font("Dialog", Font.PLAIN, 20));
-		add(opt2);
-
-		opt3 = new JRadioButton();
-		opt3.setBounds(170, 580, 700, 30);
-		opt3.setBackground(Color.WHITE);
-		opt3.setFont(new Font("Dialog", Font.PLAIN, 20));
-		add(opt3);
-
-		opt4 = new JRadioButton();
-		opt4.setBounds(170, 620, 700, 30);
-		opt4.setBackground(Color.WHITE);
-		opt4.setFont(new Font("Dialog", Font.PLAIN, 20));
-		add(opt4);
-
-		groupoptions = new ButtonGroup();
-		groupoptions.add(opt1);
-		groupoptions.add(opt2);
-		groupoptions.add(opt3);
-		groupoptions.add(opt4);
-
-		next = new JButton("Next");
-		next.setBounds(1080, 480, 200, 40);
-		next.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		next.setBackground(new Color(30, 144, 255));
-		next.setForeground(Color.WHITE);
-		next.addActionListener(this);
-		add(next);
-
-		submit = new JButton("Submit");
-		submit.setBounds(1080, 560, 200, 40);
-		submit.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		submit.setBackground(new Color(30, 144, 255));
-		submit.setForeground(Color.WHITE);
-		submit.addActionListener(this);
-		submit.setEnabled(false);
-		add(submit);
-
-		start(count);
-		setLocationRelativeTo(null);
-		setVisible(true);
 	}
 
 	public void actionPerformed(ActionEvent ae) {
@@ -222,16 +326,17 @@ public class Quiz extends JFrame implements ActionListener {
 	public void paint(Graphics g) {
 		super.paint(g);
 
-		String time = "Time left - " + timer + " seconds";
-		g.setColor(Color.RED);
-		g.setFont(new Font("Tahoma", Font.BOLD, 20));
-		int textXPosition = 1050;
-		g.drawString(time, textXPosition, 480);
+		String time = "Time Remaining: " + timer + "s";
+		g.setColor(new Color(244, 67, 54));
+		g.setFont(new Font("Segoe UI", Font.BOLD, 18));
+		int textXPosition = 1100;
+		g.drawString(time, textXPosition, 350);
 
 		if (timer > 0) {
-			g.drawString(time, textXPosition, 480);
+			g.drawString(time, textXPosition, 350);
 		} else {
-			g.drawString("Times up!!", textXPosition, 480);
+			g.setColor(new Color(244, 67, 54));
+			g.drawString("Time's Up!", textXPosition, 350);
 		}
 
 		timer--;
@@ -257,7 +362,7 @@ public class Quiz extends JFrame implements ActionListener {
 				next.setEnabled(false);
 				submit.setEnabled(true);
 			}
-			if (count == 9) { // submit button
+			if (count == 9) {
 				if (groupoptions.getSelection() == null) {
 					useranswers[count][0] = "";
 				} else {
@@ -273,22 +378,21 @@ public class Quiz extends JFrame implements ActionListener {
 				}
 				setVisible(false);
 				new Score(name, score);
-			} else { // next button
+			} else {
 				if (groupoptions.getSelection() == null) {
 					useranswers[count][0] = "";
 				} else {
 					useranswers[count][0] = groupoptions.getSelection().getActionCommand();
 				}
-				count++; // 0 // 1
+				count++;
 				start(count);
 				setLocationRelativeTo(null);
 			}
 		}
-
 	}
 
 	public void start(int count) {
-		qno.setText("" + (count + 1) + ". ");
+		qno.setText("Q" + (count + 1) + ".");
 		question.setText(questions[count][0]);
 		opt1.setText(questions[count][1]);
 		opt1.setActionCommand(questions[count][1]);
@@ -303,6 +407,7 @@ public class Quiz extends JFrame implements ActionListener {
 		opt4.setActionCommand(questions[count][4]);
 
 		groupoptions.clearSelection();
+		progress.setText("Question " + (count + 1) + " of 10");
 	}
 
 	public static void main(String[] args) {

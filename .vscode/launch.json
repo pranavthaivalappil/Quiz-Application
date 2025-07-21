@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Quiz Application",
+            "request": "launch",
+            "mainClass": "com.java.quizApplication.Login",
+            "projectName": "Quiz-Application-2",
+            "classPaths": ["src"],
+            "sourcePaths": ["src"]
+        }
+    ]
+} 
