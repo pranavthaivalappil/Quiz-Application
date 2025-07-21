@@ -10,7 +10,23 @@ A simple Java-based quiz application with a user-friendly interface, a timer, an
 2. Open it in any Java IDE (such as Eclipse, IntelliJ IDEA, or NetBeans).
 3. Run the file to launch the application.
 
----
+## 📸 Demo
+
+![App Demo](images/Login.png)
+*Login Page
+
+![Rules](images/Rules.png)
+*Rules Page
+
+![Quizz](images/Quizz.png)
+*Quizz Page
+
+
+
+
+
+
+
 
 ## How to Use
 
