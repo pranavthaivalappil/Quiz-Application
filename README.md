@@ -1,48 +1,90 @@
 # Quiz Application
 
-A simple Java-based quiz application with a user-friendly interface, a timer, and a 50-50 lifeline. Ideal for learning and practicing Java Swing and basic quiz logic.
+A full-stack Java quiz application with a modern Swing UI, MySQL database integration, user management, dynamic questions, and persistent score tracking. Ideal for learning and demonstrating Java desktop development, JDBC, and database-driven applications.
 
 ---
 
-## Installation
+## 🚀 Features
 
-1. Download the `QuizApplication.java` file.
-2. Open it in any Java IDE (such as Eclipse, IntelliJ IDEA, or NetBeans).
-3. Run the file to launch the application.
+- Modern Java Swing user interface with custom styling and responsive design
+- MySQL database integration for persistent storage
+- User registration and profile management
+- Dynamic question loading from the database (not hardcoded)
+- Score tracking and best score display per user
+- Randomized questions for each quiz session
+- Detailed statistics and quiz history
+- Cross-platform: works on Windows, macOS, and Linux
+
+---
 
 ## 📸 Demo
 
 ![App Demo](images/Login.png)
-*Login Page
+*Login Page*
 
 ![Rules](images/Rules.png)
-*Rules Page
+*Rules Page*
 
 ![Quizz](images/Quizz.png)
-*Quizz Page
-
-
-
-
-
-
-
-
-## How to Use
-
-- When the application starts, a login page will appear.
-- Enter your name and click the **"Rules"** button to read the quiz instructions.
-- Click **"Start Quiz"** to begin after reading the rules.
-- The quiz consists of **10 multiple-choice questions**.
-- You have **15 seconds** to answer each question. The timer starts as soon as the question is displayed.
-- A **"50-50" lifeline** is available for one question, removing two incorrect options.
-- After answering all the questions, your **final score** will be shown.
+*Quiz Page*
 
 ---
 
-## Contributing
+## 🛠️ Tech Stack
+- Java 8+
+- Java Swing (UI)
+- MySQL (database)
+- JDBC (database connectivity)
+- Eclipse or VS Code (recommended IDEs)
 
-If you'd like to contribute:
+---
+
+## 🗄️ Database Setup
+
+1. **Install MySQL** and ensure it is running on `localhost:3306`.
+2. Use the provided [`schema.sql`](schema.sql) to create the database and tables:
+   ```bash
+   mysql -u root -p < schema.sql
+   ```
+3. (Optional) Use [`seed.sql`](seed.sql) to add sample data:
+   ```bash
+   mysql -u root -p quiz_app < seed.sql
+   ```
+4. See [`migrations/`](migrations/) for schema evolution and [`README.sql`](README.sql) for example queries.
+
+---
+
+## 💻 How to Run
+
+### **In Eclipse:**
+1. Import the project (**File > Import > Existing Projects into Workspace**).
+2. Right-click the project > **Build Path > Configure Build Path** > **Add External JARs...**
+3. Add `lib/mysql-connector-j-8.2.0.jar` to the **Classpath**.
+4. Right-click `Login.java` > **Run As > Java Application**.
+
+### **In VS Code or Terminal:**
+```bash
+# Compile
+javac -cp "src;lib/mysql-connector-j-8.2.0.jar" src/com/java/quizApplication/*.java
+# Run
+java -cp "src;lib/mysql-connector-j-8.2.0.jar" com.java.quizApplication.Login
+```
+
+---
+
+## 📖 How to Use
+
+- Start the application. The login page will appear.
+- Enter your name and proceed to the rules screen.
+- After reading the rules, update your profile if needed.
+- The quiz consists of 10 random multiple-choice questions from the database.
+- You have 15 seconds per question.
+- Your score and best score are saved and displayed at the end.
+- All data is stored in MySQL for persistence and analytics.
+
+---
+
+## 🤝 Contributing
 
 1. Fork this repository.
 2. Create a new branch for your changes.
@@ -52,7 +94,7 @@ If you'd like to contribute:
 
 ---
 
-## License
+## 📄 License
 
 This project is licensed under the **MIT License**.
 
@@ -60,4 +102,4 @@ You are free to use, modify, and distribute this code for personal or commercial
 
 ---
 
-**Thanks for reading!**
+**Thanks for checking out QuizMaster!**

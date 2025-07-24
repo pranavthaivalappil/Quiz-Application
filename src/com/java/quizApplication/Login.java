@@ -141,9 +141,9 @@ public class Login extends JFrame implements ActionListener {
 		add(back);
 
 		// Footer text
-		JLabel footer = new JLabel("© 2024 QuizMaster - Challenge Yourself!");
-		footer.setBounds(450, 420, 350, 20);
-		footer.setFont(new Font("Segoe UI", Font.ITALIC, 12));
+		JLabel footer = new JLabel("Quizzr by Pranav");
+		footer.setBounds(325, 480, 200, 20); // Centered and higher for visibility
+		footer.setFont(new Font("Segoe UI", Font.BOLD, 14));
 		footer.setForeground(new Color(158, 158, 158));
 		add(footer);
 
