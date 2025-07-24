@@ -51,9 +51,12 @@ public class Score extends JFrame implements ActionListener {
 		}
 	}
 
-	Score(String name, int score) {
+	Score(String name, int score, int userId) {
 		setBounds(400, 150, 850, 650);
 		
+		// Get user's best score from database
+		int bestScore = DatabaseManager.getUserBestScore(userId);
+
 		// Modern gradient background
 		setContentPane(new JPanel() {
 			@Override
@@ -152,7 +155,22 @@ public class Score extends JFrame implements ActionListener {
 		}
 		scorePanel.add(lblscore);
 
-		// Performance message
+		// Show best score if different
+		if (bestScore > score) {
+			JLabel bestScoreLabel = new JLabel("Best: " + bestScore + "/100");
+			bestScoreLabel.setBounds(40, 135, 200, 25);  // Moved down from 125 to 135
+			bestScoreLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+			bestScoreLabel.setForeground(new Color(76, 175, 80));
+			scorePanel.add(bestScoreLabel);
+		} else if (score > 0 && score == bestScore) {
+			JLabel newBestLabel = new JLabel("🎉 New Best Score!");
+			newBestLabel.setBounds(40, 135, 200, 25);  // Moved down from 125 to 135
+			newBestLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
+			newBestLabel.setForeground(new Color(76, 175, 80));
+			scorePanel.add(newBestLabel);
+		}
+
+		// Performance message - moved down to avoid overlap
 		String performance;
 		if (score >= 90) performance = "Outstanding! 🌟";
 		else if (score >= 70) performance = "Excellent work! 🎉";
@@ -160,7 +178,7 @@ public class Score extends JFrame implements ActionListener {
 		else performance = "Keep practicing! 📚";
 		
 		JLabel performanceLabel = new JLabel(performance);
-		performanceLabel.setBounds(40, 130, 300, 25);
+		performanceLabel.setBounds(40, 160, 300, 25);  // Moved down from 130 to 160
 		performanceLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
 		performanceLabel.setForeground(new Color(96, 125, 139));
 		scorePanel.add(performanceLabel);
@@ -226,6 +244,6 @@ public class Score extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		new Score("User", 75);
+		new Score("User", 75, 1); // Assuming userId 1 for testing
 	}
 }

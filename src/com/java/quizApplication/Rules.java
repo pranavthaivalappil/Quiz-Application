@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
 public class Rules extends JFrame implements ActionListener {
 
 	String name;
+	int userId; // Add userId field
 	JButton start, back;
 
 	// Custom JButton with rounded corners
@@ -54,8 +55,9 @@ public class Rules extends JFrame implements ActionListener {
 		}
 	}
 
-	Rules(String name) {
+	Rules(String name, int userId) {
 		this.name = name;
+		this.userId = userId;
 		
 		// Modern gradient background
 		setContentPane(new JPanel() {
@@ -188,7 +190,7 @@ public class Rules extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent ae) {
 		if (ae.getSource() == start) {
 			setVisible(false);
-			new profileUpdate(name);
+			new profileUpdate(name, userId); // Pass userId to profileUpdate
 		} else {
 			setVisible(false);
 			new Login();
@@ -196,6 +198,6 @@ public class Rules extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		new Rules("User");
+		new Rules("User", 1); // Pass a dummy userId for now
 	}
 }

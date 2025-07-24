@@ -35,6 +35,7 @@ public class Quiz extends JFrame implements ActionListener {
 	public static int score = 0;
 
 	String name;
+	int userId; // Add userId field
 
 	// Custom JButton with rounded corners
 	class RoundedButton extends JButton {
@@ -69,8 +70,13 @@ public class Quiz extends JFrame implements ActionListener {
 		}
 	}
 
-	Quiz(String name) {
+	Quiz(String name, int userId) {
 		this.name = name;
+		this.userId = userId;
+		
+		// Load questions from database
+		loadQuestionsFromDatabase();
+
 		setBounds(50, 0, 1400, 900);
 		setSize(1400, 720);
 		
@@ -280,6 +286,28 @@ public class Quiz extends JFrame implements ActionListener {
 		answers[9][1] = "Bytecode is executed by JVM";
 	}
 
+	// Load questions from database instead of hardcoded questions
+	private void loadQuestionsFromDatabase() {
+		String[][] dbQuestions = DatabaseManager.getRandomQuestions();
+		String[] dbAnswers = DatabaseManager.getRandomAnswers();
+		
+		// Copy database questions to existing array structure
+		for (int i = 0; i < Math.min(dbQuestions.length, 10); i++) {
+			if (dbQuestions[i].length >= 5) {
+				questions[i][0] = dbQuestions[i][0]; // question
+				questions[i][1] = dbQuestions[i][1]; // option1
+				questions[i][2] = dbQuestions[i][2]; // option2
+				questions[i][3] = dbQuestions[i][3]; // option3
+				questions[i][4] = dbQuestions[i][4]; // option4
+			}
+		}
+		
+		// Copy answers
+		for (int i = 0; i < Math.min(dbAnswers.length, 10); i++) {
+			answers[i][1] = dbAnswers[i];
+		}
+	}
+
 	public void actionPerformed(ActionEvent ae) {
 
 		if (ae.getSource() == next) {
@@ -318,8 +346,12 @@ public class Quiz extends JFrame implements ActionListener {
 					score += 0;
 				}
 			}
+			
+			// Save quiz result to database
+			DatabaseManager.saveQuizAttempt(userId, score);
+			
 			setVisible(false);
-			new Score(name, score);
+			new Score(name, score, userId); // Pass userId to Score
 		}
 	}
 
@@ -377,7 +409,7 @@ public class Quiz extends JFrame implements ActionListener {
 					}
 				}
 				setVisible(false);
-				new Score(name, score);
+				new Score(name, score, userId); // Pass userId to Score
 			} else {
 				if (groupoptions.getSelection() == null) {
 					useranswers[count][0] = "";
@@ -411,6 +443,6 @@ public class Quiz extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		new Quiz("User");
+		new Quiz("User", 1); // Assuming userId 1 for now
 	}
 }

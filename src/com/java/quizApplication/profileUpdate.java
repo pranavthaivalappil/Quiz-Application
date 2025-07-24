@@ -18,8 +18,10 @@ public class profileUpdate extends JFrame implements ActionListener {
 	private JTextField nameTextField, emailTextField;
 	private JPasswordField passwordField, confirmPasswordField;
 	private JButton updateButton, cancelButton;
+	private int userId; // Add userId field
 
-	profileUpdate(String name) {
+	profileUpdate(String name, int userId) {
+		this.userId = userId;
 
 		setTitle("Profile and Password Update");
 		setBounds(400, 150, 600, 500);
@@ -96,7 +98,7 @@ public class profileUpdate extends JFrame implements ActionListener {
 				// Code to update profile and password goes here
 				JOptionPane.showMessageDialog(this, "Profile and password updated successfully.");
 				setVisible(false);
-				new Quiz(name);
+				new Quiz(name, userId); // Pass userId to Quiz
 			}
 		} else if (ae.getSource() == cancelButton) {
 			setVisible(false);
@@ -105,6 +107,6 @@ public class profileUpdate extends JFrame implements ActionListener {
 
 	public static void main(String[] args) {
 		String name = "User";
-		new profileUpdate(name);
+		new profileUpdate(name, 1); // Pass dummy userId
 	}
 }

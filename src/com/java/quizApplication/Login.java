@@ -58,6 +58,9 @@ public class Login extends JFrame implements ActionListener {
 	}
 
 	Login() {
+		// Initialize database on startup
+		DatabaseManager.initDatabase();
+		
 		// Modern gradient background
 		setContentPane(new JPanel() {
 			@Override
@@ -161,8 +164,16 @@ public class Login extends JFrame implements ActionListener {
 					"Name Required", 
 					JOptionPane.WARNING_MESSAGE);
 			} else {
-				setVisible(false);
-				new Rules(name);
+				// Save user to database and get user ID
+				String email = name.toLowerCase() + "@quiz.app"; // Simple email generation
+				int userId = DatabaseManager.saveUser(name, email);
+				
+				if (userId != -1) {
+					setVisible(false);
+					new Rules(name, userId); // Pass userId to Rules
+				} else {
+					JOptionPane.showMessageDialog(this, "Database error. Please try again.");
+				}
 			}
 		} else if (ae.getSource() == back) {
 			int choice = JOptionPane.showConfirmDialog(this, 
